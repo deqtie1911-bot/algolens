@@ -1,7 +1,6 @@
-// src/pages/Analitik.js
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { skorTahap } from "../data/questions";
 import Layout from "../components/Layout";
 
@@ -11,11 +10,22 @@ export default function Analitik() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = () => {
     getDocs(collection(db, "ujian")).then((snap) => {
-      setData(snap.docs.map((d, i) => ({ ...d.data(), bil: i + 1 })));
+      setData(snap.docs.map((d) => ({ ...d.data(), docId: d.id })));
       setLoading(false);
     });
-  }, []);
+  };
+
+  const handleDelete = async (docId, nama) => {
+    if (window.confirm(`Padam rekod ${nama}?`)) {
+      await deleteDoc(doc(db, "ujian", docId));
+      setData(data.filter((d) => d.docId !== docId));
+    }
+  };
 
   const filtered = data.filter((d) =>
     d.nama?.toLowerCase().includes(carian.toLowerCase()) ||
@@ -68,11 +78,12 @@ export default function Analitik() {
                 <th>Debug.</th>
                 <th>Keseluruhan</th>
                 <th>Tahap</th>
+                <th>Tindakan</th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
-                <tr><td colSpan={10} style={{ textAlign: "center", color: "#6b7280", padding: "2rem" }}>Tiada rekod ditemui</td></tr>
+                <tr><td colSpan={11} style={{ textAlign: "center", color: "#6b7280", padding: "2rem" }}>Tiada rekod ditemui</td></tr>
               ) : (
                 filtered.map((d, i) => {
                   const t = skorTahap(d.skorKeseluruhan);
@@ -88,6 +99,14 @@ export default function Analitik() {
                       <td>{d.skor?.DB}%</td>
                       <td style={{ fontWeight: 600 }}>{d.skorKeseluruhan}%</td>
                       <td><span className={`badge badge-${t.badge.split('-')[1]}`}>{t.tahap}</span></td>
+                      <td>
+                        <button
+                          onClick={() => handleDelete(d.docId, d.nama)}
+                          style={{ background: "#fee2e2", color: "#991b1b", border: "none", padding: "4px 10px", borderRadius: 6, cursor: "pointer", fontSize: 12 }}
+                        >
+                          Padam
+                        </button>
+                      </td>
                     </tr>
                   );
                 })
