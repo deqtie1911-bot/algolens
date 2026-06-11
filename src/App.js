@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Ujian from "./pages/Ujian";
 import Keputusan from "./pages/Keputusan";
+import Cadangan from "./pages/Cadangan";
 import Pensyarah from "./pages/Pensyarah";
 import Analitik from "./pages/Analitik";
 
@@ -24,6 +25,7 @@ function AppRoutes() {
       <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
       <Route path="/ujian" element={<PrivateRoute><Ujian /></PrivateRoute>} />
       <Route path="/keputusan" element={<PrivateRoute><Keputusan /></PrivateRoute>} />
+      <Route path="/cadangan" element={<PrivateRoute><Cadangan /></PrivateRoute>} />
       <Route path="/pensyarah" element={<PrivateRoute role="pensyarah"><Pensyarah /></PrivateRoute>} />
       <Route path="/analitik" element={<PrivateRoute role="pensyarah"><Analitik /></PrivateRoute>} />
     </Routes>
